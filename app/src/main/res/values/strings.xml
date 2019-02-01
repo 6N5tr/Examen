@@ -2,5 +2,21 @@
     <string name="app_name">Examen</string>
     <string name="BotonCrearTablaPadre">Crear Tabla</string>
     <string name="BotonListarTablaPadre">Listar Tabla</string>
+    <string name="NombreDeEquipo">Nombre De Equipo</string>
+    <string name="Liga">Nombre De La Liga</string>
+    <string name="fechaCreaciom">Fecha de Creacion</string>
+    <string name="numeroCopas">Numero De Copas Internacionales</string>
+    <string name="campeonActual">Campeón Actual</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="guardar">Guardar</string>
+    <string name="nuevo">Nuevo</string>
+    <string name="jugador">Nombre Del Jugador</string>
+    <string name="numero">Numero de Camiseta</string>
+    <string name="nombreCamiseta">Nombre Camiseta</string>
+    <string name="poderEspecial">Poder Especial</string>
+    <string name="fechaIngreso">Fecha Ingreso Al Equipo</string>
+    <string name="gol">Goles</string>
+    <string name="idEquipo">Id Del Equipo</string>
+
 
 </resources>

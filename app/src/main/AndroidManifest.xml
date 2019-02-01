@@ -9,6 +9,14 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
+        <activity android:name=".AtributosHijoActivity">
+        </activity>
+        <activity android:name=".FotoActivity">
+        </activity>
+        <activity android:name=".ListarTablaHijoActivity">
+        </activity>
+        <activity android:name=".ListarTablaPadreActivity">
+        </activity>
         <activity android:name=".CrearTablaActivity">
         </activity>
         <activity android:name=".MainActivity">
