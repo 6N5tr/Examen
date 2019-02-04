@@ -1,20 +1,15 @@
 package com.example.examen
 
-import android.app.ProgressDialog
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.EditText
-import android.widget.Toast
-import com.android.volley.Request
-import com.android.volley.RequestQueue
-import com.android.volley.Response
-import com.android.volley.VolleyError
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
+import com.beust.klaxon.Klaxon
+import com.github.kittinunf.fuel.httpGet
+import com.github.kittinunf.fuel.httpPost
 import kotlinx.android.synthetic.main.activity_crear_tabla.*
-import org.json.JSONObject
-import java.util.HashMap
+
 
 class CrearTablaActivity : AppCompatActivity() {
 
@@ -25,14 +20,31 @@ class CrearTablaActivity : AppCompatActivity() {
     private var etCopasInter:EditText?=null
     private var etCampeonActual:EditText?=null
 
-    private val URL = "http://192.168.1.128/webservices/equipo.php"
-
-
+    val url="http://192.168.1.128:1337/Equipo"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_crear_tabla)
 
+
+/*
+        url.httpGet()
+            .responseString { request, response, result ->
+
+                when (result) {
+                    is com.github.kittinunf.result.Result.Failure -> {
+                        val ex = result.getException()
+                        Log.i("http","Error: ${ex}")
+                    }
+                    is com.github.kittinunf.result.Result.Success -> {
+                        val data = result.get()
+                        Log.i("http","Datos: ${data}")
+
+                    }
+                }
+
+            }
+*/
         etNombreEquipo = findViewById(R.id.etNombreEquipo) as EditText
         etNombreLiga = findViewById(R.id.etNombreLiga) as EditText
         etFechaCreacion = findViewById(R.id.etFechaCreacion) as EditText
@@ -40,7 +52,7 @@ class CrearTablaActivity : AppCompatActivity() {
         etCampeonActual = findViewById(R.id.etCampeonActual) as EditText
 
         btnCancelar.setOnClickListener { irAMain() }
-        btnGuardar.setOnClickListener { ejecutarServicio()}
+        btnGuardar.setOnClickListener {crearTabla()}
     }
 
     fun irAMain(){
@@ -50,34 +62,45 @@ class CrearTablaActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    fun ejecutarServicio(){
+    fun crearTabla(){
 
-        var req = object:StringRequest(Request.Method.POST,URL,
-            Response.Listener<String> {
-                response ->
-                Toast.makeText(applicationContext, "PERFECTOOOOOOO!", Toast.LENGTH_SHORT).show()
+        var parametros=listOf(
+            "NombreEquipo" to etNombreEquipo?.text.toString(),
+            "NombreLiga" to etNombreLiga?.text.toString(),
+            "FechaCreacion" to etFechaCreacion?.text.toString(),
+            "NumeroCopas" to etCopasInter?.text.toString(),
+            "CampeonActual" to etCampeonActual?.text.toString()
 
+        )
 
+        url.httpPost(parametros)
+            .responseString { request, response, result ->
 
-            }, object: Response.ErrorListener {
-                override fun onErrorResponse(error: VolleyError?) {
+                when (result) {
+                    is com.github.kittinunf.result.Result.Failure -> {
+                        val ex = result.getException()
+                        Log.i("http","Error: ${ex}")
+                    }
+                    is com.github.kittinunf.result.Result.Success -> {
+                        val data = result.get()
+                        val EquipoClase:EquipoHttp = Klaxon().parse<EquipoHttp>(data) as EquipoHttp
+                        Log.i("http","Datos: ${EquipoClase?.NombreEquipo}")
 
-                    Toast.makeText(applicationContext, "Todo Mal", Toast.LENGTH_SHORT).show()
+                    }
                 }
 
-            }){
-                override fun getParams():MutableMap<String,String>{
-
-                val params=HashMap<String,String>()
-                    params.put("NombreEquipo",etNombreEquipo?.text.toString())
-                    params.put("NombreLiga",etNombreLiga?.text.toString())
-                    params.put("FechaCreacion",etFechaCreacion?.text.toString())
-                    params.put("NumeroCopas",etCopasInter?.text.toString())
-                    params.put("CampeonActual",etCampeonActual?.text.toString())
-                    return params
-
             }
-        }
-            VolleySingleton.instance?.addToRequestQueue(req)
-        }
+
+
+    }
+
 }
+class EquipoHttp(var NombreEquipo:String,
+                 var NombreLiga:String,
+                 var FechaCreacion:String,
+                 var NumeroCopas:String,
+                 var CampeonActual:String,
+                 var createAt:Long,
+                 var updatedAt:Long,
+                 var id:Int
+){}
