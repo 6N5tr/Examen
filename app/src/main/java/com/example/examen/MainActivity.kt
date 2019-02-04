@@ -24,4 +24,7 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, ListarTablaPadreActivity::class.java)
         startActivity(intent)
     }
+    override fun onBackPressed() {
+        moveTaskToBack(true)
+    }
 }

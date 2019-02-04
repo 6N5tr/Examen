@@ -17,6 +17,6 @@
     <string name="fechaIngreso">Fecha Ingreso Al Equipo</string>
     <string name="gol">Goles</string>
     <string name="idEquipo">Id Del Equipo</string>
-
+    <string name="foto">Tomar Foto</string>
 
 </resources>
