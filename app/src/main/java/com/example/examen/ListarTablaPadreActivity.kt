@@ -3,6 +3,8 @@ package com.example.examen
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.ContextMenu
+import android.view.View
 import android.widget.AbsListView
 import android.widget.ListView
 import com.google.firebase.database.*
@@ -56,4 +58,13 @@ class ListarTablaPadreActivity : AppCompatActivity() {
 
 
     }
+    override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
+        super.onCreateContextMenu(menu, v, menuInfo)
+        menu!!.setHeaderTitle("Select Option")
+        menu.add(0, v!!.id, 0, "Editar")
+        menu.add(0, v.id, 1, "Eliminar")
+        menu.add(0, v.id, 2, "Listar Jugadores")
+        menu.add(0, v.id, 3, "Compartir")
+    }
+
 }
