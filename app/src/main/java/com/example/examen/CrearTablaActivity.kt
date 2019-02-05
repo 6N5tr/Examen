@@ -21,7 +21,8 @@ import org.jetbrains.anko.yesButton
 
 class CrearTablaActivity : AppCompatActivity() {
 
-
+    lateinit var ref:DatabaseReference
+    lateinit var listaequipos:MutableList<Equipo>
     private var etNombreEquipo:EditText?=null
     private var etNombreLiga:EditText?=null
     private var etFechaCreacion:EditText?=null
@@ -47,9 +48,12 @@ class CrearTablaActivity : AppCompatActivity() {
     fun crearTabla() {
 
 
+
+        val intent = Intent(this, MainActivity::class.java)
+
         alert("Desea guardar los datos?") {
 
-            yesButton { etNombreEquipo = findViewById(R.id.etNombreEquipo) as EditText
+            positiveButton ("De Acuerdo!"){ etNombreEquipo = findViewById(R.id.etNombreEquipo) as EditText
                 etNombreLiga = findViewById(R.id.etNombreLiga) as EditText
                 etFechaCreacion = findViewById(R.id.etFechaCreacion) as EditText
                 etCopasInter = findViewById(R.id.etCopasInter) as EditText
@@ -66,11 +70,37 @@ class CrearTablaActivity : AppCompatActivity() {
 
                 ref.child(equipoid!!).setValue(equipo).addOnCompleteListener{
 
+                    listaequipos= mutableListOf()
+
+                    ref.addValueEventListener(object :ValueEventListener{
+
+                        override fun onCancelled(p0: DatabaseError) {
+
+                        }
+
+                        override fun onDataChange(p0: DataSnapshot) {
+                            if(p0!!.exists()){
+                                listaequipos.clear()
+                                for(h in p0.children){
+                                    val equipo=h.getValue(Equipo::class.java)
+                                    listaequipos.add(equipo!!)
+                                    Intent(applicationContext, ListarTablaPadreActivity::class.java)
+                                    val bundle = Bundle()
+                                    bundle.putParcelableArrayList("ListaObjetos",listaequipos )
+                                    intent.putExtras(bundle)
+                                    startActivity(intent)
+
+                                }
+
+                            }
+                        }
+                    })
                     Toast.makeText(applicationContext,"Agregado Exitosamente",Toast.LENGTH_SHORT).show()
 
+                    startActivity(intent)
 
                 }}
-            noButton { }
+            negativeButton("No aun!") { }
         }.show()
 
 
