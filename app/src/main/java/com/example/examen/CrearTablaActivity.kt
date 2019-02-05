@@ -5,10 +5,18 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.EditText
-import com.beust.klaxon.Klaxon
-import com.github.kittinunf.fuel.httpGet
-import com.github.kittinunf.fuel.httpPost
+import android.widget.Toast
+import com.google.firebase.FirebaseApp
+import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_crear_tabla.*
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.ValueEventListener
+
+
+
+
 
 
 class CrearTablaActivity : AppCompatActivity() {
@@ -20,36 +28,10 @@ class CrearTablaActivity : AppCompatActivity() {
     private var etCopasInter:EditText?=null
     private var etCampeonActual:EditText?=null
 
-    val url="http://192.168.1.128:1337/Equipo"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_crear_tabla)
-
-
-/*
-        url.httpGet()
-            .responseString { request, response, result ->
-
-                when (result) {
-                    is com.github.kittinunf.result.Result.Failure -> {
-                        val ex = result.getException()
-                        Log.i("http","Error: ${ex}")
-                    }
-                    is com.github.kittinunf.result.Result.Success -> {
-                        val data = result.get()
-                        Log.i("http","Datos: ${data}")
-
-                    }
-                }
-
-            }
-*/
-        etNombreEquipo = findViewById(R.id.etNombreEquipo) as EditText
-        etNombreLiga = findViewById(R.id.etNombreLiga) as EditText
-        etFechaCreacion = findViewById(R.id.etFechaCreacion) as EditText
-        etCopasInter = findViewById(R.id.etCopasInter) as EditText
-        etCampeonActual = findViewById(R.id.etCampeonActual) as EditText
 
         btnCancelar.setOnClickListener { irAMain() }
         btnGuardar.setOnClickListener {crearTabla()}
@@ -62,45 +44,29 @@ class CrearTablaActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    fun crearTabla(){
+    fun crearTabla() {
 
-        var parametros=listOf(
-            "NombreEquipo" to etNombreEquipo?.text.toString(),
-            "NombreLiga" to etNombreLiga?.text.toString(),
-            "FechaCreacion" to etFechaCreacion?.text.toString(),
-            "NumeroCopas" to etCopasInter?.text.toString(),
-            "CampeonActual" to etCampeonActual?.text.toString()
 
-        )
+        
+        etNombreEquipo = findViewById(R.id.etNombreEquipo) as EditText
+        etNombreLiga = findViewById(R.id.etNombreLiga) as EditText
+        etFechaCreacion = findViewById(R.id.etFechaCreacion) as EditText
+        etCopasInter = findViewById(R.id.etCopasInter) as EditText
+        etCampeonActual = findViewById(R.id.etCampeonActual) as EditText
 
-        url.httpPost(parametros)
-            .responseString { request, response, result ->
 
-                when (result) {
-                    is com.github.kittinunf.result.Result.Failure -> {
-                        val ex = result.getException()
-                        Log.i("http","Error: ${ex}")
-                    }
-                    is com.github.kittinunf.result.Result.Success -> {
-                        val data = result.get()
-                        val EquipoClase:EquipoHttp = Klaxon().parse<EquipoHttp>(data) as EquipoHttp
-                        Log.i("http","Datos: ${EquipoClase?.NombreEquipo}")
+        val database = FirebaseDatabase.getInstance()
+        val ref = database.getReference("Equipo")
 
-                    }
-                }
+        val equipoid=ref.push().key
+        val equipo = Equipo(equipoid.toString(),etNombreEquipo?.text.toString(),etNombreLiga?.text.toString(),etFechaCreacion?.text.toString(),
+            etCopasInter?.text.toString(),etCampeonActual?.text.toString())
 
-            }
 
+        ref.child(equipoid!!).setValue(equipo).addOnCompleteListener{
+
+                Toast.makeText(applicationContext,"Todo Bien",Toast.LENGTH_SHORT).show()
+        }
 
     }
-
 }
-class EquipoHttp(var NombreEquipo:String,
-                 var NombreLiga:String,
-                 var FechaCreacion:String,
-                 var NumeroCopas:String,
-                 var CampeonActual:String,
-                 var createAt:Long,
-                 var updatedAt:Long,
-                 var id:Int
-){}
