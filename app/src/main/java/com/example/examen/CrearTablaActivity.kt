@@ -3,6 +3,7 @@ package com.example.examen
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Parcel
 import android.util.Log
 import android.widget.EditText
 import android.widget.Toast
@@ -21,8 +22,7 @@ import org.jetbrains.anko.yesButton
 
 class CrearTablaActivity : AppCompatActivity() {
 
-    lateinit var ref:DatabaseReference
-    lateinit var listaequipos:MutableList<Equipo>
+
     private var etNombreEquipo:EditText?=null
     private var etNombreLiga:EditText?=null
     private var etFechaCreacion:EditText?=null
@@ -67,34 +67,16 @@ class CrearTablaActivity : AppCompatActivity() {
                 val equipo = Equipo(equipoid.toString(),etNombreEquipo?.text.toString(),etNombreLiga?.text.toString(),etFechaCreacion?.text.toString(),
                     etCopasInter?.text.toString(),etCampeonActual?.text.toString())
 
-
                 ref.child(equipoid!!).setValue(equipo).addOnCompleteListener{
 
-                    listaequipos= mutableListOf()
+                    val i = Intent(this@CrearTablaActivity, ListarTablaPadreActivity::class.java)
+                    i.putExtra("nombre", Equipo)
+                    startActivity(i)
 
-                    ref.addValueEventListener(object :ValueEventListener{
+                    /*val intentenv= Intent(applicationContext, ListarTablaPadreActivity::class.java)
+                    intentenv.putExtra(EQUIPO,etNombreEquipo?.text.toString())
 
-                        override fun onCancelled(p0: DatabaseError) {
-
-                        }
-
-                        override fun onDataChange(p0: DataSnapshot) {
-                            if(p0!!.exists()){
-                                listaequipos.clear()
-                                for(h in p0.children){
-                                    val equipo=h.getValue(Equipo::class.java)
-                                    listaequipos.add(equipo!!)
-                                    Intent(applicationContext, ListarTablaPadreActivity::class.java)
-                                    val bundle = Bundle()
-                                    bundle.putParcelableArrayList("ListaObjetos",listaequipos )
-                                    intent.putExtras(bundle)
-                                    startActivity(intent)
-
-                                }
-
-                            }
-                        }
-                    })
+                    startActivity(intentenv)*/
                     Toast.makeText(applicationContext,"Agregado Exitosamente",Toast.LENGTH_SHORT).show()
 
                     startActivity(intent)
@@ -106,4 +88,9 @@ class CrearTablaActivity : AppCompatActivity() {
 
 
     }
+
+companion object {
+    const val EQUIPO="equipo"
 }
+}
+
